@@ -19,31 +19,31 @@
       <div class="graph">
         <div class="box">
           <div class="circle info">
-            <span>{{ info }}</span>
+            <span>{{ data.info }}</span>
           </div>
           <p>Info</p>
         </div>
         <div class="box">
           <div class="circle debug">
-            <span>{{ debug }}</span>
+            <span>{{ data.debug }}</span>
           </div>
           <p>debug</p>
         </div>
         <div class="box">
           <div class="circle warn">
-            <span>{{ warn }}</span>
+            <span>{{ data.warn }}</span>
           </div>
           <p>warn</p>
         </div>
         <div class="box">
           <div class="circle error">
-            <span>{{ error }}</span>
+            <span>{{ data.error }}</span>
           </div>
           <p>Error</p>
         </div>
       </div>
       <div class="evaluate">
-        <p>当前健康评估:{{ health }}</p>
+        <p>当前健康评估:{{ data.score }}</p>
       </div>
     </div>
   </div>
@@ -55,12 +55,16 @@
   export default {
     data () {
       return {
-        health:100,
         selectTime:"1小时内",
-        info:10,
-        debug:1,
-        warn:1,
-        error:1
+        time:"1",
+        unit:"hour",
+        data: {
+          info:10,
+          debug:1,
+          warn:1,
+          error:1 ,
+          score:100,
+        }
       }
     },
     props: {
@@ -71,40 +75,49 @@
     methods: {
       handleCommand(command) {
         if (command === 'a') {
-          this.selectTime = "1小时内";
+          this.time = 1;
+          this.unit = "hour";
+          this.selectTime = "1小时内"
         }
         else if (command === 'b') {
-          this.selectTime = "1天内";
+          this.time = 1;
+          this.unit = "day";
+          this.selectTime = "1天内"
         }
         else if (command === 'c') {
-          this.selectTime = "1周内";
+          this.time = 1;
+          this.unit = "week";
+          this.selectTime = "1周内"
         }
         else if (command === 'd') {
-          this.selectTime = "1个月内";
+          this.time = 1;
+          this.unit = "month";
+          this.selectTime = "1个月内"
         }
         else if (command === 'e') {
-          this.selectTime = "所有时间";
+          this.unit = "all";
+          this.selectTime = "所有时间"
         }
+        this.getHealthInfo();
       },
       getHealthInfo() {
-        this.$http.get("http://localhost:8088",{
+        this.$http.get("http://localhost:8088/health",{
           params: {
-            index: index,
-            time: 0
+            index: this.index,
+            time: this.time,
+            unit: this.unit
           }
         })
           .then(rep => {
-
+            this.data = rep.data;
           })
           .catch(error => {
 
           })
       }
     },
-    computed: {
-
-    },
-    components:{
+    mounted(){
+      this.getHealthInfo();
     }
   }
 </script>

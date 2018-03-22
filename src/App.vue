@@ -8,15 +8,18 @@
         <el-menu-item index="/discover">
           <template slot="title"><i class="el-icon-view"></i>发现</template>
         </el-menu-item>
-        <el-menu-item index="/monitor">
+        <el-submenu index="1">
           <template slot="title"><i class="el-icon-view"></i>监控</template>
-        </el-menu-item>
-        <el-menu-item index="/alarm">
-          <template slot="title"><i class="el-icon-bell"></i>报警</template>
-        </el-menu-item>
+            <el-menu-item index="/monitor/show">监控中</el-menu-item>
+          <el-menu-item index="/monitor/event">历史事件</el-menu-item>
+        </el-submenu>
         <el-menu-item index="/health">
           <template slot="title"><i class="el-icon-tickets"></i>健康</template>
         </el-menu-item>
+        <el-submenu index="2">
+          <template slot="title"><i class="el-icon-setting"></i>设置</template>
+          <el-menu-item index="/contact/show">联系人</el-menu-item>
+        </el-submenu>
       </el-menu>
     </el-aside>
     <el-container>
