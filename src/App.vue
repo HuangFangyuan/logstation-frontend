@@ -1,11 +1,14 @@
 <template>
-  <el-container>
+  <el-container class="container">
     <el-aside width="220px">
       <el-input v-model="input_index" placeholder="输入索引">
         <i slot="prefix" class="el-input__icon el-icon-search"></i>
       </el-input>
       <el-menu router>
-        <el-menu-item index="/discover">
+               <!--background-color="#545c64"-->
+               <!--text-color="#fff"-->
+               <!--active-text-color="#ffd04b"-->
+        <el-menu-item index="/log/discover">
           <template slot="title"><i class="el-icon-view"></i>发现</template>
         </el-menu-item>
         <el-submenu index="1">
@@ -59,5 +62,9 @@
     text-align: center;
     color: #2c3e50;
     /*margin-top: 60px;*/
+  }
+  .container {
+    max-width:1400px;
+    margin: 0 auto;
   }
 </style>

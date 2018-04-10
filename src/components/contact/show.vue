@@ -23,24 +23,20 @@
 </template>
 
 <script>
+  import ShowTemplate from '../template/show.vue';
   export default {
+    components: {
+      ShowTemplate
+    },
     data() {
       return {
-        contacts:[
-          {
-            id:1,
-            name :'黄方圆',
-            value:'464788260@qq.com',
-            method:'邮箱',
-            defaultUse:true
-          }
-        ],
+        contacts:[],
         contactsCopy:[],
         queryString:''
       }
     },
     filters: {
-      methodFilter: function(method) {
+      methodFilter(method) {
         if (method === 'email') {
           return "邮箱"
         }
@@ -48,8 +44,7 @@
           return '电话'
         }
       }
-    }
-    ,
+    },
     watch: {
       queryString() {
         this.querySearchAsync(this.queryString);
@@ -107,7 +102,6 @@
   .text {
     font-size: 14px;
   }
-
   .item {
     margin-bottom: 18px;
   }
@@ -119,7 +113,6 @@
   .clearfix:after {
     clear: both
   }
-
   .box-card {
     width: 550px;
     margin: 50px 0 0 250px;

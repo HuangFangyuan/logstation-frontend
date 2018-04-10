@@ -1,7 +1,7 @@
 <template>
   <div class="add-monitor">
     <p class="title">更新</p>
-    <el-form ref="form" :model="form" label-width="80px" class="table">
+    <el-form ref="form" :model="form" label-width="80px" class="form">
       <div class="action" v-if="active === 0">
         <el-form-item label="索引">
           <el-input v-model="form.index"></el-input>
@@ -55,7 +55,6 @@
             <el-input v-model="form.interval"></el-input>
           </el-form-item>
         </div>
-
       </div>
       <div class ="condition" v-else>
         <el-form-item label="通知方式">
@@ -93,8 +92,8 @@
       <el-step title="通知"></el-step>
     </el-steps>
     <div class="buttons">
-      <el-button style="margin-top: 12px;" @click="pre" type="warning" plain>{{ pre_action }}</el-button>
-      <el-button style="margin-top: 12px;" @click="next" type="success" plain>{{ next_action }}</el-button>
+      <el-button style="margin-top: 12px;" @click="pre" type="warning" plain>{{ preAction }}</el-button>
+      <el-button style="margin-top: 12px;" @click="next" type="success" plain>{{ nextAction }}</el-button>
     </div>
   </div>
 </template>
@@ -102,13 +101,12 @@
 <script>
   export default {
     props: {
-      id: Number
+        id: String
     },
     data() {
       return {
-        pre_action:'返回',
-        next_action:'下一步',
-        action:'下一步',
+        preAction:'返回',
+        nextAction:'下一步',
         active: 0,
         form:{
           id: 1,
@@ -146,8 +144,8 @@
         }
         if (this.active > 0){
           this.active--;
-          this.pre_action = '返回';
-          this.next_action = '下一步';
+          this.preAction = '返回';
+          this.nextAction = '下一步';
         }
       },
       next() {
@@ -156,8 +154,8 @@
         }
         if (this.active < 1) {
           this.active++;
-          this.pre_action = '上一步';
-          this.next_action = '完成';
+          this.preAction = '上一步';
+          this.nextAction = '完成';
         }
       },
       loadContact() {
@@ -179,8 +177,8 @@
           });
       },
       querySearchAsync(queryString, cb) {
-        var contacts = this.contacts.filter(this.filterMethod());
-        var results = queryString ? contacts.filter(this.createStateFilter(queryString)) : contacts;
+        let contacts = this.contacts.filter(this.filterMethod());
+        let results = queryString ? contacts.filter(this.createStateFilter(queryString)) : contacts;
 
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
@@ -244,9 +242,9 @@
   .buttons {
     text-align: center;
   }
-  .table {
+  .form {
     margin: 80px 350px;
-    height: 300px;
+    height: 500px;
   }
   .title {
     margin: 0 10px 0 10px;

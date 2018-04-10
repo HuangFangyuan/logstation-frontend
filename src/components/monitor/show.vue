@@ -1,13 +1,19 @@
 <template>
   <div class="monitor">
-    <p class="title">正在监控</p>
-    <el-input
-      placeholder="请输入过滤字段"
-      prefix-icon="el-icon-search"
-      v-model="queryString"
-      style="width: 200px; margin:10px 0 0 10px">
-    </el-input>
-    <el-button size="mini" type="success" plain @click="linkToAdd" style="margin:10px 0 0 10px">新建</el-button>
+    <p class="title">监控</p>
+    <div>
+      <el-input
+        placeholder="请输入过滤字段"
+        prefix-icon="el-icon-search"
+        v-model="queryString"
+        style="width: 200px; margin:10px 0 0 10px">
+      </el-input>
+      <el-button size="mini" type="success" plain @click="linkToAdd" style="margin:10px 0 0 10px">新建</el-button>
+      <el-button-group style="float: right; padding: 15px 15px 0 0">
+        <el-button size="mini" type="primary" >活动</el-button>
+        <el-button size="mini" type="plain" >全部</el-button>
+      </el-button-group>
+    </div>
     <el-table
       :data="monitors"
       style="width: 100%"
@@ -72,9 +78,9 @@
       this.loadMonitor();
     },
     methods: {
-      dateFormat:function(row, column) {
-        var date = row[column.property];
-        if (date == undefined) {
+      dateFormat(row, column) {
+        let date = row[column.property];
+        if (date === undefined) {
           return "";
         }
         return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");

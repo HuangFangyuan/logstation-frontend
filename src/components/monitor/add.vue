@@ -13,7 +13,7 @@
           <el-select v-model="form.type" placeholder="请选择监控类型">
             <el-option label="定值监控" value="定值监控"></el-option>
             <el-option label="次数监控" value="次数监控"></el-option>
-            <el-option label="比例监控" value="比例监控"></el-option>
+            <!--<el-option label="比例监控" value="比例监控"></el-option>-->
             <el-option label="平均值监控" value="平均值监控"></el-option>
           </el-select>
         </el-form-item>
@@ -32,21 +32,24 @@
           <el-form-item label="值">
             <el-input v-model="form.value"></el-input>
           </el-form-item>
-          <el-form-item label="间隔">
+          <el-form-item label="时间范围">
             <el-input v-model="form.interval"></el-input>
           </el-form-item>
-        </div>
-        <div v-else-if="form.type === '比例监控'">
-          <el-form-item label="字段">
-            <el-input v-model="form.field"></el-input>
-          </el-form-item>
-          <el-form-item label="值">
-            <el-input v-model="form.value"></el-input>
-          </el-form-item>
-          <el-form-item label="间隔">
-            <el-input v-model="form.interval"></el-input>
+          <el-form-item label="执行频率">
+            <el-input v-model="form.frequency"></el-input>
           </el-form-item>
         </div>
+        <!--<div v-else-if="form.type === '比例监控'">-->
+          <!--<el-form-item label="字段">-->
+            <!--<el-input v-model="form.field"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="值">-->
+            <!--<el-input v-model="form.value"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="间隔">-->
+            <!--<el-input v-model="form.interval"></el-input>-->
+          <!--</el-form-item>-->
+        <!--</div>-->
         <div v-else>
           <el-form-item label="字段">
             <el-input v-model="form.field"></el-input>
@@ -54,8 +57,11 @@
           <el-form-item label="值">
             <el-input v-model="form.value"></el-input>
           </el-form-item>
-          <el-form-item label="间隔">
+          <el-form-item label="时间范围">
             <el-input v-model="form.interval"></el-input>
+          </el-form-item>
+          <el-form-item label="执行频率">
+            <el-input v-model="form.frequency"></el-input>
           </el-form-item>
         </div>
       </div>
@@ -95,8 +101,8 @@
       <el-step title="通知"></el-step>
     </el-steps>
     <div class="buttons">
-      <el-button style="margin-top: 12px;" @click="pre" type="warning" plain>{{ pre_action }}</el-button>
-      <el-button style="margin-top: 12px;" @click="next" type="success" plain>{{ next_action }}</el-button>
+      <el-button style="margin-top: 12px;" @click="pre" type="warning" plain>{{ preAction }}</el-button>
+      <el-button style="margin-top: 12px;" @click="next" type="success" plain>{{ nextAction }}</el-button>
     </div>
   </div>
 </template>
@@ -105,8 +111,8 @@
   export default {
     data() {
       return {
-        pre_action:'返回',
-        next_action:'下一步',
+        preAction:'返回',
+        nextAction:'下一步',
         active: 0,
         form:{
           name:'',
@@ -118,23 +124,24 @@
           contact:'',
           subject:'',
           content:'',
-          interval:''
+          interval:0,
+          frequency:0
         },
         contacts:[],
         timeout:null,
       }
     },
     methods: {
-      fail() {
+      fail(msg) {
         this.$notify.error({
           title: '失败',
-          message: '创建失败'
+          message: msg
         });
       },
-      success() {
+      success(msg) {
         this.$notify({
           title: '成功',
-          message: '成功创建',
+          message: msg,
           type: 'success'
         });
       },
@@ -144,8 +151,8 @@
         }
         if (this.active > 0){
           this.active--;
-          this.pre_action = '返回';
-          this.next_action = '下一步';
+          this.preAction = '返回';
+          this.nextAction = '下一步';
         }
       },
       next() {
@@ -154,42 +161,46 @@
         }
         if (this.active < 1) {
           this.active++;
-          this.pre_action = '上一步';
-          this.next_action = '完成';
+          this.preAction = '上一步';
+          this.nextAction = '完成';
         }
-
       },
       loadContact() {
         this.$http.get("http://localhost:8088/contact")
           .then( rep => {
-            this.contact = rep.data;
+            console.log(rep.data);
+            this.contacts = rep.data;
+            let defualtContact = rep.data.filter( a => {
+              return a.defaultUse === true;
+            });
+            this.form.method = defualtContact[0].method;
+            this.form.contact = defualtContact[0].value;
           })
-          .catch( error => {
-            console.log(error);
+          .catch( () => {
+            fail("获取不到");
           });
-//        return [
-//          {"method": "message", "value": "15528117076"},
-//          {"method": "email", "value": "464788260@qq.com"},
-//        ];
       },
       querySearchAsync(queryString, cb) {
-        var contacts = this.contacts.filter(this.filterMethod());
-        var results = queryString ? contacts.filter(this.createStateFilter(queryString)) : contacts;
-
+        let contacts = this.contacts.filter(this.filterByContactMethod());
+        let results = queryString ? contacts.filter(this.createStateFilter(queryString)) : contacts;
+        results.forEach( contact => {
+          contact.value = contact.value + '('+contact.name+')';
+        });
         clearTimeout(this.timeout);
         this.timeout = setTimeout(() => {
           cb(results);
         }, 200);
       },
       createStateFilter(queryString) {
-        return (state) => {
-          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
+        return (contact) => {
+          return (contact.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0 ||
+            contact.name.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
         };
       },
-      filterMethod() {
-        var that = this;
-        return (state) => {
-          return state.method === that.form.method;
+      filterByContactMethod() {
+        let that = this;
+        return (contact) => {
+          return contact.method === that.form.method;
         };
       },
       handleSelect(item) {
@@ -207,17 +218,18 @@
         param.append("subject", this.form.subject);
         param.append("content", this.form.content);
         param.append("name", this.form.name);
+        param.append("frequency", this.form.frequency);
         this.$http.post("http://localhost:8088/monitor",param)
           .then( rep => {
-            if (rep.data === "success") {
-              this.success();
+            if (rep.status === 200) {
+              this.success("创建成功");
               setTimeout( ()=>{
                 this.$router.push("/monitor/show");
               },1000)
             }
           })
-          .catch( error => {
-            this.fail();
+          .catch( () => {
+            this.fail("创建失败");
           });
       }
     },

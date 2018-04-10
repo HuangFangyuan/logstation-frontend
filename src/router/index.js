@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import discover from '@/components/discover'
-import show_monitor from '@/components/monitor/show'
-import add_monitor from '@/components/monitor/add'
-import modify_monitor from '@/components/monitor/modify'
-import add_contact from '@/components/contact/add'
-import show_contact from '@/components/contact/show'
+import discover from '@/components/log/Discover'
+import showMonitor from '@/components/monitor/show'
+import addMonitor from '@/components/monitor/add'
+import modifyMonitor from '@/components/monitor/modify'
+import addContact from '@/components/contact/add'
+import showContact from '@/components/contact/show'
 import event from '@/components/monitor/event'
-import alarm from '@/components/alarm'
-import health from '@/components/health'
+import health from '@/components/health/health'
+import healthGraph from '@/components/health/graph'
 
 
 Vue.use(Router);
@@ -16,16 +16,16 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: '/discover',
+      path: '/log/discover',
       component: discover
     },
     {
       path: '/monitor/show',
-      component: show_monitor,
+      component: showMonitor,
     },
     {
       path: '/monitor/add',
-      component: add_monitor
+      component: addMonitor
     },
     {
       path: '/monitor/event',
@@ -33,25 +33,25 @@ export default new Router({
     },
     {
       path: '/monitor/modify/:id',
-      component: modify_monitor,
+      component: modifyMonitor,
       props: true
     },
     {
       path: '/contact/add',
-      component: add_contact
+      component: addContact
     },
     {
       path: '/contact/show',
-      component: show_contact
+      component: showContact
     }
     ,
     {
-      path: '/alarm',
-      component: alarm
-    },
-    {
       path: '/health',
       component: health
+    },
+    {
+      path: '/health/graph',
+      component: healthGraph
     }
   ]
 })

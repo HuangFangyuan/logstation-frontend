@@ -7,9 +7,12 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import axios from 'axios'
 import moment from 'moment'
+import * as echarts from 'echarts';
+
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
+Vue.use(echarts);
 Vue.prototype.$http = axios;
 Vue.prototype.$moment = moment;
 

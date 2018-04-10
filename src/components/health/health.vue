@@ -24,12 +24,6 @@
           <p>Info</p>
         </div>
         <div class="box">
-          <div class="circle debug">
-            <span>{{ data.debug }}</span>
-          </div>
-          <p>debug</p>
-        </div>
-        <div class="box">
           <div class="circle warn">
             <span>{{ data.warn }}</span>
           </div>
@@ -50,8 +44,6 @@
 </template>
 
 <script>
-  import index from "../router/index";
-
   export default {
     data () {
       return {
@@ -59,11 +51,10 @@
         time:"1",
         unit:"hour",
         data: {
-          info:10,
-          debug:1,
-          warn:1,
-          error:1 ,
-          score:100,
+          info:0,
+          warn:0,
+          error:0 ,
+          score:0,
         }
       }
     },

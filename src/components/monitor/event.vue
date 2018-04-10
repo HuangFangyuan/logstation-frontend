@@ -3,7 +3,7 @@
     <p class="title">历史事件</p>
     <el-table
       :data="events"
-      style="width: 100%"
+      style="width: 1100px"
       v-loading="loading"
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading">
@@ -25,7 +25,7 @@
         prop="monitor.field">
       </el-table-column>
       <el-table-column
-        label="状态">
+        label="发送状态">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.send">已发送</el-tag>
           <el-tag type="danger" v-else>未发送</el-tag>
@@ -39,6 +39,25 @@
         </template>
       </el-table-column>
     </el-table>
+    <el-dialog title="详情" width="500px" :visible.sync="dialogCardVisible">
+      <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
+        <el-tab-pane label="事件" name="first">
+          <el-tag type="info" class="label">发生时间</el-tag>{{ current.createTime | timeFilter }}<br>
+          <el-tag type="info" class="label">发送状态</el-tag>{{ current.send | sendFilter}}<br>
+        </el-tab-pane>
+        <el-tab-pane label="监控" name="second">
+          <div class="text item">
+            <el-tag type="info" class="label">名称</el-tag>{{ current.monitor.name }}<br>
+            <el-tag type="info" class="label">索引</el-tag>{{ current.monitor.index }}<br>
+            <el-tag type="info" class="label">类型</el-tag>{{ current.monitor.type }}<br>
+            <el-tag type="info" class="label">字段</el-tag>{{ current.monitor.field }}<br>
+            <el-tag type="info" class="label">值</el-tag>{{ current.monitor.value }}<br>
+            <el-tag type="info" class="label">主题</el-tag>{{ current.monitor.subject }}<br>
+            <el-tag type="info" class="label">内容</el-tag>{{ current.monitor.content }}<br>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </el-dialog>
   </div>
 
 </template>
@@ -54,9 +73,22 @@
           return '已发送';
         else
           return '未发送'
+      },
+      timeFilter(date) {
+        let d = new Date(date);
+        let year = d.getFullYear();
+        let month = d.getMonth() + 1;
+        let day = d.getDate() <10 ? '0' + d.getDate() : '' + d.getDate();
+        let hour = d.getHours();
+        let minutes = d.getMinutes();
+        let seconds = d.getSeconds() < 10 ? '0'+ d.getSeconds(): d.getSeconds();
+        return  year+ '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
       }
     },
     methods: {
+      handleClick(tab, event) {
+        console.log(tab, event);
+      },
       dateFormat:function(row, column) {
         var date = row[column.property];
         if (date == undefined) {
@@ -65,7 +97,8 @@
         return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
       },
       handleView(index, row) {
-        this.$router.push("/event/view/" + row.id);
+        this.current = this.events[index];
+        this.dialogCardVisible = true;
       },
       loadEvent() {
         this.$http.get("http://localhost:8088/event")
@@ -77,7 +110,22 @@
     },
     data() {
       return {
+        activeName:'first',
+        dialogCardVisible:false,
         events:[],
+        current:{
+          monitor: {
+            name:'',
+            index:'',
+            type:'',
+            field:'',
+            value:'',
+            subject:'',
+            content:''
+          }
+
+
+        },
         loading: true
       }
     }
