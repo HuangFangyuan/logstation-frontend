@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="evaluate">
-        <p>当前健康评估:{{ data.score }}</p>
+        <p>当前系统健康评估:{{ data.score }}</p>
       </div>
     </div>
   </div>
@@ -109,14 +109,14 @@
     },
     mounted(){
       this.getHealthInfo();
-    }
+    },
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   #health {
-
+    width: 1200px;
   }
   .upper {
     border: 1px solid #DCDFE6;
@@ -137,10 +137,10 @@
     padding-left: 50px;
   }
   .circle {
-    width: 150px;
-    height:150px;
-    line-height: 150px;
-    border: 10px solid;
+    width: 100px;
+    height:100px;
+    line-height: 100px;
+    border: 5px solid;
     border-radius: 150px;
     text-align: center;
   }

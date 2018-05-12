@@ -1,15 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import discover from '@/components/log/Discover'
-import showMonitor from '@/components/monitor/show'
-import addMonitor from '@/components/monitor/add'
-import modifyMonitor from '@/components/monitor/modify'
-import addContact from '@/components/contact/add'
-import showContact from '@/components/contact/show'
-import event from '@/components/monitor/event'
-import health from '@/components/health/health'
-import healthGraph from '@/components/health/graph'
-
+import discover from '../pages/log/Discover.vue'
+import showMonitor from '../pages/monitor/show.vue'
+import addMonitor from '../pages/monitor/add.vue'
+import modifyMonitor from '../pages/monitor/modify.vue'
+import addContact from '../pages/contact/add.vue'
+import showContact from '../pages/contact/show.vue'
+import event from '../pages/monitor/event.vue'
+import graph from '../pages/graph/show.vue'
 
 Vue.use(Router);
 
@@ -46,12 +44,9 @@ export default new Router({
     }
     ,
     {
-      path: '/health',
-      component: health
+      path: '/graph',
+      name: 'graph',
+      component: graph,
     },
-    {
-      path: '/health/graph',
-      component: healthGraph
-    }
   ]
 })

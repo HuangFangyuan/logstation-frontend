@@ -1,14 +1,15 @@
 <template>
-  <div class="event">
-    <p class="title">历史事件</p>
+  <div class="event-container">
+    <MyTitle title="历史事件"></MyTitle>
     <el-table
+      class="event-table"
       :data="events"
       style="width: 1100px"
       v-loading="loading"
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading">
       <el-table-column
-        label="日期"
+        label="触发日期"
         prop="createTime"
         :formatter="dateFormat"  >
       </el-table-column>
@@ -39,7 +40,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog title="详情" width="500px" :visible.sync="dialogCardVisible">
+    <el-dialog class="event-detail" title="详情" width="500px" :visible.sync="dialogCardVisible">
       <el-tabs v-model="activeName" @tab-click="handleClick" type="card">
         <el-tab-pane label="事件" name="first">
           <el-tag type="info" class="label">发生时间</el-tag>{{ current.createTime | timeFilter }}<br>
@@ -58,14 +59,21 @@
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
+    <div class="page-container">
+      <el-tag class="log-amount">共 {{ total }} 条数据</el-tag>
+      <el-pagination class="pagination" layout="prev, pager, next" background @current-change="handleCurrentChange" :total="pageNum"></el-pagination>
+    </div>
   </div>
-
 </template>
 
 <script>
+  import MyTitle from '../../components/title.vue'
   export default {
-    created() {
+    mounted() {
       this.loadEvent();
+    },
+    components: {
+      MyTitle
     },
     filters: {
       sendFilter(send) {
@@ -87,23 +95,32 @@
     },
     methods: {
       handleClick(tab, event) {
-        console.log(tab, event);
       },
       dateFormat:function(row, column) {
         var date = row[column.property];
-        if (date == undefined) {
+        if (date === undefined) {
           return "";
         }
         return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
+      },
+      handleCurrentChange(page) {
+        this.loadEvent(page-1);
       },
       handleView(index, row) {
         this.current = this.events[index];
         this.dialogCardVisible = true;
       },
-      loadEvent() {
-        this.$http.get("http://localhost:8088/event")
+      loadEvent(from = 0) {
+        this.$http.get("http://localhost:8088/event",{
+          params: {
+            from: from,
+            size: this.size
+          }
+        })
           .then( rep => {
-            this.events = rep.data;
+            this.events = rep.data.data.events;
+            this.total = rep.data.data.total;
+            this.pageNum = rep.data.data.total / this.size * 10;
             this.loading = false;
           })
       },
@@ -113,6 +130,10 @@
         activeName:'first',
         dialogCardVisible:false,
         events:[],
+        total:0,
+        pageNum:0,
+        from:0,
+        size:8,
         current:{
           monitor: {
             name:'',
@@ -123,8 +144,6 @@
             subject:'',
             content:''
           }
-
-
         },
         loading: true
       }
@@ -132,20 +151,32 @@
   }
 </script>
 
-<style scoped>
-  .event {
-    border: 1px solid #DCDFE6;
-    margin: 0 0 0 20px;
-    border-radius: 3px;
-    width: 1100px;
-    height:630px;
-  }
-  .title {
-    margin: 0 10px 0 10px;
-    padding: 0 0 0 10px;
-    color: #909399;
-    border-bottom: 1px solid #E4E7ED;
-    height: 38px;
-    line-height: 38px;
+<style lang="scss" scoped>
+  @import "../../assets/css/common";
+  .event-container {
+    .event-table {
+      border: 1px solid $border-color-1;
+      border-radius: 3px;
+      height: 500px;
+    }
+    .event-detail {
+      .label {
+        width: 70px;
+        text-align: center;
+        margin-top: 5px;
+        margin-right: 10px;
+      }
+    }
+    .page-container {
+      width: 1100px;
+      margin-top: 30px;
+      display: flex;
+       .log-amount {
+         display: inline-block
+       }
+      .pagination {
+        margin-left: auto;
+      }
+     }
   }
 </style>
