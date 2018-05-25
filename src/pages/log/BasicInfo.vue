@@ -2,7 +2,7 @@
   <section class="basic-info-container">
     <div class="row">
         <div class="wrapper-1">
-          <div class="today-icon"></div>
+          <div class="today-icon" @mouseover="over($refs.today)" ref="today" @mouseout="out($refs.today)" ></div>
           <div class="text">
             <p class="time">今日</p>
             <p class="amount">{{ today }}</p>
@@ -23,6 +23,15 @@
   export default {
     data(){
       return {
+      }
+    },
+    methods:{
+      over(dom) {
+//        dom.style['transition'] = 'all 0.5s ease-in-out';
+        dom.style.transition = 'all 1.5s ease-in-out'
+      },
+      out(dom) {
+
       }
     },
     props:{
@@ -66,12 +75,18 @@
         @include width-height($icon-w, $icon-h);
         display: inline-block;
         margin-left: 40px;
+        &:hover{
+          transform:rotate(360deg);
+        }
       }
       .all-icon {
         background-image: url("../../assets/svg/moon.svg");
         background-size: 70px 70px;
         @include width-height(70px, 70px);
-        @extend .today-icon
+        @extend .today-icon;
+        &:hover{
+        transform:rotate(260deg);
+      }
       }
       .text {
         margin-left: auto;

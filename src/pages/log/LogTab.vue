@@ -138,9 +138,8 @@
     methods:{
       taskGraph(system, module, task){
         this.$router.push({
-          name: 'graph',
+          name: 'task',
           params:{
-            activeName: 'task',
             system: system,
             module: module,
             task: task
@@ -149,9 +148,8 @@
       },
       moduleGraph(system, module){
         this.$router.push({
-          name: 'graph',
+          name: 'module',
           params:{
-            activeName: 'module',
             system: system,
             module: module
           }
@@ -189,7 +187,4 @@
       color: black;
     }
   }
-
-
-
 </style>

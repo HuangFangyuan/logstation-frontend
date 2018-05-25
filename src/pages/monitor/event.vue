@@ -8,25 +8,11 @@
       v-loading="loading"
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading">
-      <el-table-column
-        label="触发日期"
-        prop="createTime"
-        :formatter="dateFormat"  >
-      </el-table-column>
-      <el-table-column
-        label="监控名称"
-        prop="monitor.name">
-      </el-table-column>
-      <el-table-column
-        label="类型"
-        prop="monitor.type">
-      </el-table-column>
-      <el-table-column
-        label="字段"
-        prop="monitor.field">
-      </el-table-column>
-      <el-table-column
-        label="发送状态">
+      <el-table-column label="触发日期" prop="createTime" :formatter="dateFormat"  ></el-table-column>
+      <el-table-column label="监控ID" prop="monitor.id" width="70"></el-table-column>
+      <el-table-column label="监控名称" prop="monitor.name" width="300"></el-table-column>
+      <el-table-column label="类型" prop="monitor.type"></el-table-column>
+      <el-table-column label="发送状态">
         <template slot-scope="scope">
           <el-tag type="success" v-if="scope.row.send">已发送</el-tag>
           <el-tag type="danger" v-else>未发送</el-tag>
@@ -34,9 +20,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
-          <el-button
-            size="mini"
-            @click="handleView(scope.$index, scope.row)">查看</el-button>
+          <el-button size="mini" @click="handleView(scope.$index, scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -51,8 +35,10 @@
             <el-tag type="info" class="label">名称</el-tag>{{ current.monitor.name }}<br>
             <el-tag type="info" class="label">索引</el-tag>{{ current.monitor.index }}<br>
             <el-tag type="info" class="label">类型</el-tag>{{ current.monitor.type }}<br>
-            <el-tag type="info" class="label">字段</el-tag>{{ current.monitor.field }}<br>
-            <el-tag type="info" class="label">值</el-tag>{{ current.monitor.value }}<br>
+            <el-tag type="info" class="label">条件</el-tag>
+            <el-tag class="condition-tag" v-for="(c, index) in current.monitor.conditions" :type="conditionTagType(c.operator)">
+              {{ c.searchField | fieldFilter }} {{ c.operator | operatorFilter }} {{ c.fromValue  }} {{ c.toValue }}
+            </el-tag><br>
             <el-tag type="info" class="label">主题</el-tag>{{ current.monitor.subject }}<br>
             <el-tag type="info" class="label">内容</el-tag>{{ current.monitor.content }}<br>
           </div>
@@ -68,6 +54,8 @@
 
 <script>
   import MyTitle from '../../components/title.vue'
+  import { format } from '../../utils/date'
+  import { FIELD, OPERATOR, field_EN2CN, operator_EN2CN } from '../../utils/constant'
   export default {
     mounted() {
       this.loadEvent();
@@ -83,25 +71,28 @@
           return '未发送'
       },
       timeFilter(date) {
-        let d = new Date(date);
-        let year = d.getFullYear();
-        let month = d.getMonth() + 1;
-        let day = d.getDate() <10 ? '0' + d.getDate() : '' + d.getDate();
-        let hour = d.getHours();
-        let minutes = d.getMinutes();
-        let seconds = d.getSeconds() < 10 ? '0'+ d.getSeconds(): d.getSeconds();
-        return  year+ '-' + month + '-' + day + ' ' + hour + ':' + minutes + ':' + seconds;
+        return format(date)
+      },
+      operatorFilter(operator) {
+        return operator_EN2CN(operator);
+      },
+      fieldFilter(field) {
+        return field_EN2CN(field)
       }
     },
     methods: {
+      conditionTagType(operator) {
+        if (operator === 'is')return 'success';
+        if (operator ==='not')return 'danger';
+      },
       handleClick(tab, event) {
       },
       dateFormat:function(row, column) {
-        var date = row[column.property];
+        let date = row[column.property];
         if (date === undefined) {
           return "";
         }
-        return this.$moment(date).format("YYYY-MM-DD HH:mm:ss");
+        return format(date);
       },
       handleCurrentChange(page) {
         this.loadEvent(page-1);
@@ -119,6 +110,9 @@
         })
           .then( rep => {
             this.events = rep.data.data.events;
+            this.events.forEach(e => {
+              e.monitor.conditions = JSON.parse( e.monitor.conditions);
+            });
             this.total = rep.data.data.total;
             this.pageNum = rep.data.data.total / this.size * 10;
             this.loading = false;
@@ -139,8 +133,7 @@
             name:'',
             index:'',
             type:'',
-            field:'',
-            value:'',
+            conditions:[],
             subject:'',
             content:''
           }

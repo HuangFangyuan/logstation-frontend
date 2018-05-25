@@ -10,11 +10,12 @@
       </el-button-group>
     </div>
     <el-table class="monitor-table" :data="monitors" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" max-height="540">
+      <el-table-column label="ID" prop="id" width="50px"></el-table-column>
       <el-table-column label="创建日期" prop="createTime" :formatter="dateFormat"></el-table-column>
-      <el-table-column label="名称" prop="name"></el-table-column>
-      <el-table-column label="索引" prop="index"></el-table-column>
-      <el-table-column label="类型" prop="type"></el-table-column>
-      <el-table-column label="状态">
+      <el-table-column label="名称" prop="name" width="300"></el-table-column>
+      <el-table-column label="索引" prop="index" width="100"></el-table-column>
+      <el-table-column label="类型" prop="type" width="100"></el-table-column>
+      <el-table-column label="状态" width="100">
         <template slot-scope="scope">
           <el-tag :type="tagType(scope.row.active)">{{ scope.row.active | activeFilter }}</el-tag>
         </template>
@@ -22,7 +23,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleView(scope.$index, scope.row)">查看</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)"><span v-if="onlyActive">取消</span><span v-else>删除</span></el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -32,8 +33,10 @@
         <el-tag type="info" class="label">名称</el-tag>{{ current.name }}<br>
         <el-tag type="info" class="label">索引</el-tag>{{ current.index }}<br>
         <el-tag type="info" class="label">类型</el-tag>{{ current.type }}<br>
-        <el-tag type="info" class="label">字段</el-tag>{{ current.field }}<br>
-        <el-tag type="info" class="label">值</el-tag>{{ current.value }}<br>
+        <el-tag type="info" class="label">条件</el-tag>
+        <el-tag class="condition-tag" v-for="(c, index) in current.conditions" :type="conditionTagType(c.operator)">
+          {{ c.searchField | fieldFilter }} {{ c.operator | operatorFilter }} {{ c.fromValue  }} {{ c.toValue }}
+        </el-tag><br>
         <el-tag type="info" class="label">主题</el-tag>{{ current.subject }}<br>
         <el-tag type="info" class="label">内容</el-tag>{{ current.content }}<br>
       </div>
@@ -45,6 +48,8 @@
   import { format } from '../../utils/date'
   import { getMonitor, deleteMonitor } from '../../api/monitor'
   import MyTitle from '../../components/title.vue'
+  import message from '../../utils/message'
+  import { field_EN2CN, operator_EN2CN } from '../../utils/constant'
   export default {
     mounted() {
       this.loadMonitor();
@@ -56,9 +61,19 @@
       activeFilter(active){
         if (active) return '活动';
         return '非活动'
+      },
+      operatorFilter(operator) {
+        return operator_EN2CN(operator);
+      },
+      fieldFilter(field) {
+        return field_EN2CN(field)
       }
     },
     methods: {
+      conditionTagType(operator) {
+        if (operator === 'is')return 'success';
+        if (operator ==='not')return 'danger';
+      },
       active(val){
         if (this.onlyActive){
           if (val === 'active')return 'primary';
@@ -91,9 +106,7 @@
       },
       createStateFilter(queryString) {
         return (state) => {
-          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
-            || state.type.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
-            || state.field.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
+          return (state.type.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
             || state.index.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
             || state.name.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
             || state.subject.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
@@ -111,14 +124,11 @@
           deleteMonitor(row.id)
           .then(rep => {
             if (rep.code === 200) {
-              this.$message({
-                message: `删除了id为${ row.id }的监控器`,
-                type: 'success'
-              });
+              message.success(`删除了id为${ row.id }的监控器`);
               this.loadMonitor();
             }
             else {
-              this.message.error('删除出了一点问题')
+              message.error('删除出了一点问题')
             }
           });
       },
@@ -134,8 +144,11 @@
         getMonitor(params)
           .then(rep => {
             if(rep.code === 200) {
-              this.monitors = rep.data;
               this.monitorsCopy = rep.data;
+              this.monitorsCopy.forEach(m => {
+                m.conditions = JSON.parse(m.conditions);
+              });
+              this.monitors = this.monitorsCopy;
               this.loading = false;
             }
           })

@@ -1,9 +1,10 @@
 <template>
   <div>
+    <MyTitle title="任务分析"></MyTitle>
     <div>
-      <el-input class="input" v-model="system1" placeholder="系统"></el-input>
-      <el-input class="input" v-model="module1" placeholder="模块"></el-input>
-      <el-input class="input" v-model="task1" placeholder="任务"></el-input>
+      <el-input class="input" v-model="system" placeholder="系统"></el-input>
+      <el-input class="input" v-model="module" placeholder="模块"></el-input>
+      <el-input class="input" v-model="task" placeholder="任务"></el-input>
       <div class="block">
         <el-date-picker v-model="startTime" type="date" placeholder="起始日期" value-format="timestamp"></el-date-picker>
       </div>
@@ -22,28 +23,25 @@
 
 <script>
   import echarts from "echarts"
+  import MyTitle from '../../components/title.vue'
+  import { mapState } from 'vuex'
   export default {
-    props: {
-      index: {
-        type:String,
-        default:'applog'
-      },
-      system: String,
-      module:String,
-      task: String
-    },
     mounted(){
-      if (this.system !==''&& this.module !== '' && this.task !=='') {
+      if (this.system !==''&& this.module !== '' && this.task !=='' && this.system !== undefined && this.module !== undefined && this.task !== undefined  ) {
         this.getData();
       }
     },
+    components:{
+      MyTitle
+    },
+    computed:mapState(['index']),
     data(){
       return {
         endTime: new Date().getTime(),
         startTime: new Date().getTime() - 1000*3600*24*7,
-        system1: this.system,
-        module1:this.module,
-        task1: this.task,
+        system: this.$route.params.system ,
+        module: this.$route.params.module ,
+        task: this.$route.params.task,
         data:{
           count:0,
           costTime:0,
@@ -64,9 +62,9 @@
             index: this.index,
             start: this.startTime,
             end: this.endTime,
-            system:this.system1,
-            module:this.module1,
-            task: this.task1
+            system:this.system,
+            module:this.module,
+            task: this.task
           }
         }).then( rep => {
           if (rep.data.code === 200) {
@@ -89,7 +87,7 @@
         let myChart = echarts.init(document.getElementById('counts'));
         let option = {
           title: {
-            text: this.task1 + '执行日历'
+            text: this.task + '执行日历'
           },
           xAxis: {
             type: 'category',

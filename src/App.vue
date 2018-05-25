@@ -8,7 +8,7 @@
     </el-header>
     <el-container>
       <el-aside class="side-nav" width="200px">
-        <el-menu router>
+        <el-menu class="menu" router>
           <el-menu-item index="/log/discover">
             <template slot="title"><i class="discover-icon"></i>发现</template>
           </el-menu-item>
@@ -17,10 +17,17 @@
             <el-menu-item index="/monitor/show">监控列表</el-menu-item>
             <el-menu-item index="/monitor/event">历史事件</el-menu-item>
           </el-submenu>
-          <el-menu-item index="/graph">
-            <template slot="title"><i class="graph-icon"></i>图表</template>
-          </el-menu-item>
           <el-submenu index="2">
+            <template slot="title"><i class="graph-icon"></i>图表</template>
+            <el-menu-item index="/graph/log">日志分析</el-menu-item>
+            <el-menu-item index="/graph/event">事件分析</el-menu-item>
+            <el-menu-item index="/graph/module">模块分析</el-menu-item>
+            <el-menu-item index="/graph/task">任务分析</el-menu-item>
+          </el-submenu>
+          <!--<el-menu-item index="/graph">-->
+            <!--<template slot="title"><i class="graph-icon"></i>图表</template>-->
+          <!--</el-menu-item>-->
+          <el-submenu index="3">
             <template slot="title"><i class="setting-icon"></i>设置</template>
             <el-menu-item index="/contact/show">联系人</el-menu-item>
           </el-submenu>
@@ -37,7 +44,6 @@
 <script>
   import ElContainer from "../node_modules/element-ui/packages/container/src/main.vue";
   import ElHeader from "../node_modules/element-ui/packages/header/src/main.vue";
-
   export default {
     components: {
       ElHeader,
@@ -67,6 +73,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    height: 100%;
   }
   .app-container {
     padding: 0;
@@ -89,12 +96,14 @@
       }
     }
     .side-nav {
-
+      .menu {
+        height: 100%;
+      }
     }
     .main {
-      margin-left:10px;
-      padding:0 0 0 20px;
-      border-left: 1px solid $border-color-1;
+      margin-left:20px;
+      padding:0;
+      height: 100%;
     }
     .discover-icon {
       background-image: url("assets/svg/discover.svg");

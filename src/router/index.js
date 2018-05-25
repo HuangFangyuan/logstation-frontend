@@ -7,7 +7,10 @@ import modifyMonitor from '../pages/monitor/modify.vue'
 import addContact from '../pages/contact/add.vue'
 import showContact from '../pages/contact/show.vue'
 import event from '../pages/monitor/event.vue'
-import graph from '../pages/graph/show.vue'
+import EG from '../pages/graph/EventGraph.vue'
+import MG from '../pages/graph/ModuleGraph.vue'
+import TG from '../pages/graph/TaskGraph.vue'
+import LG from '../pages/graph/LogGraph.vue'
 
 Vue.use(Router);
 
@@ -44,9 +47,24 @@ export default new Router({
     }
     ,
     {
-      path: '/graph',
-      name: 'graph',
-      component: graph,
+      path: '/graph/module',
+      name: 'module',
+      component: MG,
+    },
+    {
+      path: '/graph/task',
+      name: 'task',
+      component: TG,
+    },
+    {
+      path: '/graph/event',
+      name: 'event',
+      component: EG,
+    },
+    {
+      path: '/graph/log',
+      name: 'log',
+      component: LG,
     },
   ]
 })

@@ -29,3 +29,10 @@ $border-color-4:#F2F6FC;
   line-height: $height;
 }
 
+@mixin dz($time:0.25s){
+  -webkit-transition: all $time ease-in-out;
+  -moz-transition: all $time ease-in-out;
+  -o-transition: all $time ease-in-out;
+  -ms-transition: all $time ease-in-out;
+  transition: all $time ease-in-out;
+}

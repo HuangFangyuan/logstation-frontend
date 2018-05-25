@@ -1,8 +1,9 @@
 <template>
   <div>
+    <MyTitle title="模块分析"></MyTitle>
     <div>
-      <el-input class="input" v-model="system1" placeholder="系统"></el-input>
-      <el-input class="input" v-model="module1" placeholder="模块"></el-input>
+      <el-input class="input" v-model="system" placeholder="系统"></el-input>
+      <el-input class="input" v-model="module" placeholder="模块"></el-input>
       <div class="block">
         <el-date-picker
           v-model="startTime"
@@ -32,26 +33,24 @@
 
 <script>
   import echarts from "echarts"
+  import MyTitle from '../../components/title.vue'
+  import { mapState } from 'vuex'
   export default {
-    props: {
-      index: {
-        type:String,
-        default:'applog'
-      },
-      system: String,
-      module: String
-    },
     mounted(){
-      if (this.system !==''&& this.module !== '') {
+      if (this.system !==''&& this.system !== undefined && this.module !== '' && this.module !== undefined) {
         this.getData();
       }
+    },
+    computed:mapState(['index']),
+    components:{
+      MyTitle
     },
     data() {
       return {
         endTime: new Date().getTime(),
         startTime: new Date().getTime() - 1000*3600*24*7,
-        system1:this.system,
-        module1:this.module,
+        system: this.$route.params.system,
+        module: this.$route.params.module,
         count:{
           y:[],
           x:[]
@@ -78,8 +77,8 @@
             index: this.index,
             start: this.startTime,
             end: this.endTime,
-            system:this.system1,
-            module:this.module1
+            system:this.system,
+            module:this.module
           }
         }).then( rep => {
           if (rep.data.code === 200) {
@@ -95,8 +94,8 @@
             index: this.index,
             start: this.startTime,
             end: this.endTime,
-            system:this.system1,
-            module:this.module1
+            system:this.system,
+            module:this.module
           }
         }).then( rep => {
           if (rep.data.code === 200) {
@@ -112,8 +111,8 @@
             index: this.index,
             start: this.startTime,
             end: this.endTime,
-            system:this.system1,
-            module:this.module1
+            system:this.system,
+            module:this.module
           }
         }).then( rep => {
           if (rep.data.code === 200) {

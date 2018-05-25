@@ -5,7 +5,7 @@ export const getContact = () => {
 };
 
 export const addContact = (params) => {
-  return http.post(baseUrl + '/contact', params);
+  return http.fetchPost(baseUrl + '/contact', params);
 };
 
 export const deleteContact = (id) => {

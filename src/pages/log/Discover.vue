@@ -52,7 +52,7 @@
       </section>
       <section class="refresh-container">
         <span class="last-refresh-time">最近刷新时间: {{ refreshTime | dateFormatFilter }}</span>
-        <div :class="[ iconClass ]" @click="refresh"></div>
+        <div class="refresh-btn refresh-icon" ref="refresh"  @click="refresh($refs.refresh)"></div>
       </section>
     </div>
     <section class="log-table">
@@ -89,6 +89,7 @@
   import { mapState } from 'vuex';
   import { getLogs, getLogsByCondition } from '../../api/log'
   import { format } from '../../utils/date'
+  import { FIELD, OPERATOR, field_EN2CN, operator_EN2CN } from '../../utils/constant'
   export default {
     mounted() {
       this._getLogs();
@@ -110,71 +111,11 @@
         searchField: '',
         operator:'',
         queries:[],
-        operators:[
-          {
-            label:'等于',
-            value:'is'
-          },{
-            label:'不等于',
-            value:'not'
-          },{
-            label:'之间',
-            value:'between'
-          }],
-        fields: [
-          {
-            label:'日期',
-            value:'eventTime'
-          },
-          {
-            label:'日志ID',
-            value:'_id'
-          },
-          {
-            label:'日志级别',
-            value:'level'
-          },
-          {
-            label:'来源',
-            value:'host'
-          },
-          {
-            label:'所在类',
-            value:'class'
-          },
-          {
-            label:'系统',
-            value:'system'
-          },
-          {
-            label:'模块',
-            value:'module'
-          },
-          {
-            label:'任务',
-            value:'task'
-          },
-          {
-            label:'结果',
-            value:'result'
-          },
-          {
-            label:'耗时',
-            value:'costTime'
-          },
-          {
-            label:'信息',
-            value:'information'
-          },
-          {
-            label:'错误',
-            value:'error'
-          }
-        ],
+        fields: FIELD,
+        operators:OPERATOR,
         formLabelWidth: '120px',
         today:0,
         history:0,
-        iconClass: 'refresh-btn',
         refreshTime:0
       }
     },
@@ -195,81 +136,20 @@
         return input;
       },
       operatorFilter(operator) {
-        switch (operator) {
-          case 'is':
-            return '是';
-            break;
-          case 'not':
-            return '不是';
-            break;
-          case 'between':
-            return '在之间';
-            break;
-        }
+        return operator_EN2CN(operator);
       },
       fieldFilter(field) {
-        let fields =  [
-          {
-            label:'日期',
-            value:'eventTime'
-          },
-          {
-            label:'日志ID',
-            value:'_id'
-          },
-          {
-            label:'日志级别',
-            value:'level'
-          },
-          {
-            label:'来源',
-            value:'host'
-          },
-          {
-            label:'所在类',
-            value:'class'
-          },
-          {
-            label:'系统',
-            value:'system'
-          },
-          {
-            label:'模块',
-            value:'module'
-          },
-          {
-            label:'任务',
-            value:'task'
-          },
-          {
-            label:'结果',
-            value:'result'
-          },
-          {
-            label:'耗时',
-            value:'costTime'
-          },
-          {
-            label:'信息',
-            value:'information'
-          },
-          {
-            label:'错误',
-            value:'error'
-          }
-        ];
-        let chinese;
-        fields.forEach( item => {
-          if (item.value === field){
-            chinese = item.label;
-          }
-        });
-        return chinese;
+        return field_EN2CN(field)
       }
     },
     methods:{
-      refresh() {
-        this.iconClass = 'el-icon-loading';
+      refresh(dom) {
+        dom.style.transition= 'all 1s ease-in-out';
+        dom.style.transform='rotate(-360deg)';
+        setTimeout(() => {
+          dom.style.transition= '';
+          dom.style.transform='';
+        },1000);
         if (this.queries.length > 0) {
           this._getLogsByCondition();
         }
@@ -370,7 +250,6 @@
             this.today = data.today;
             this.history = data.history;
             this.refreshTime = new Date().getTime();
-            this.iconClass = 'refresh-btn';
           }
           else {
             this.logs = [];
@@ -419,6 +298,10 @@
           margin-right: 5px;
         }
         .refresh-btn {
+          @include width-height(20px, 20px);
+          display: inline-block;
+        }
+        .refresh-icon {
           background-image: url("../../assets/svg/refresh.svg");
           background-size: 20px 20px;
           @include width-height(20px, 20px);
